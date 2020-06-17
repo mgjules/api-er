@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/JulesMike/api-er/security"
+	"github.com/jinzhu/gorm"
 )
 
 // User Roles
@@ -31,7 +32,7 @@ func (u *User) IsNormal() bool {
 }
 
 // BeforeSave gorm hook
-func (u *User) BeforeSave() (err error) {
+func (u *User) BeforeSave(scope *gorm.Scope) (err error) {
 	if security.IsPasswordHashed([]byte(u.Password)) {
 		return
 	}
@@ -42,7 +43,7 @@ func (u *User) BeforeSave() (err error) {
 		return
 	}
 
-	u.Password = string(hashedPassword)
+	scope.SetColumn("Password", string(hashedPassword))
 
 	return
 }
