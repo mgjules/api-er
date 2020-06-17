@@ -38,8 +38,8 @@ func main() {
 
 	// Cors
 	corsCfg := cors.DefaultConfig()
-	if cfg.CORS.AllowedOrigins != nil && len(cfg.CORS.AllowedOrigins) > 0 {
-		corsCfg.AllowOrigins = cfg.CORS.AllowedOrigins
+	if cfg.HTTP.CORS.AllowedOrigins != nil && len(cfg.HTTP.CORS.AllowedOrigins) > 0 {
+		corsCfg.AllowOrigins = cfg.HTTP.CORS.AllowedOrigins
 	} else {
 		corsCfg.AllowAllOrigins = true
 	}

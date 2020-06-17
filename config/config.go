@@ -11,6 +11,8 @@ type CORSConfig struct {
 type HTTPConfig struct {
 	Host string
 	Port string
+
+	CORS CORSConfig `mapstructure:"cors"`
 }
 
 // Config holds app-wide config
@@ -18,7 +20,6 @@ type Config struct {
 	Prod bool
 
 	HTTP HTTPConfig `mapstructure:"http"`
-	CORS CORSConfig `mapstructure:"cors"`
 }
 
 // Load loads the config
