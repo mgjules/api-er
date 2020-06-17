@@ -7,6 +7,7 @@ import (
 	"github.com/JulesMike/api-er/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/static"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -56,6 +57,9 @@ func main() {
 	r.Use(ginzap.RecoveryWithZap(logger, true))
 	r.Use(cors.New(corsCfg))
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
+
+	// Static Routes Middlewares
+	r.Use(static.Serve("/", static.LocalFile("./static", false)))
 
 	attachRoutes(r)
 
