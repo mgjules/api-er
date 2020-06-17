@@ -4,13 +4,19 @@ import (
 	"log"
 	"time"
 
+	"github.com/JulesMike/api-er/controller"
+	"github.com/JulesMike/api-er/security"
+
 	"github.com/JulesMike/api-er/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
+
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 // AppName is just the app name
@@ -44,6 +50,19 @@ func main() {
 	} else {
 		corsCfg.AllowAllOrigins = true
 	}
+
+	// Database
+	db, err := gorm.Open(cfg.DB.Dialect, cfg.DB.Name)
+	if err != nil {
+		logger.Fatal("Can't connect to DB", zap.Error(err))
+	}
+	defer db.Close()
+
+	autoMigrate(db)
+
+	controller.Init(db)
+
+	security.Init(cfg.Security.PasswordSalt)
 
 	// Gin server
 	if cfg.Prod {

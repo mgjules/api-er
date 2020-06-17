@@ -2,6 +2,21 @@ package config
 
 import "github.com/spf13/viper"
 
+// SecurityConfig holds security-related config
+type SecurityConfig struct {
+	PasswordSalt string `mapstructure:"password_salt"`
+}
+
+// DBConfig holds db-related config
+type DBConfig struct {
+	Dialect  string
+	Name     string
+	Host     string
+	Port     string
+	Username string
+	Password string
+}
+
 // CORSConfig holds cors-related config
 type CORSConfig struct {
 	AllowedOrigins []string `mapstructure:"allowed_origins"`
@@ -19,7 +34,9 @@ type HTTPConfig struct {
 type Config struct {
 	Prod bool
 
-	HTTP HTTPConfig `mapstructure:"http"`
+	HTTP     HTTPConfig     `mapstructure:"http"`
+	DB       DBConfig       `mapstructure:"db"`
+	Security SecurityConfig `mapstructure:"security"`
 }
 
 // Load loads the config

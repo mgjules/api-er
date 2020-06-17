@@ -1,8 +1,15 @@
 prod = false
 
+[db]
+dialect = "sqlite3"
+name = "api.db"
+
 [http]
 host = "localhost"
 port = 8080
 
 [cors]
 allowed_origins = ["http://localhost:8081"]
+
+[security]
+password_hash = "884bbbd8-4587-571b-9f23-3dca91e98a1c"

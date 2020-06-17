@@ -17,6 +17,9 @@
 # Temp directory
 tmp
 
+# Database 
+*.db
+
 # App TOML Config
 *.toml
 
