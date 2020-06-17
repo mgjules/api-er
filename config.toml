@@ -1,0 +1,5 @@
+prod = false
+
+[http]
+host = "localhost"
+port = 8080
