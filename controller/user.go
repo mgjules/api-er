@@ -3,6 +3,8 @@ package controller
 import (
 	"net/http"
 
+	uuid "github.com/satori/go.uuid"
+
 	"github.com/JulesMike/api-er/entity"
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +12,11 @@ import (
 type createUser struct {
 	Username string `json:"username" binding:"required,min=8"`
 	Password string `json:"password" binding:"required,min=8"`
+}
+
+type updateUser struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // CreateUser creates a new user
@@ -43,4 +50,35 @@ func ListUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, users)
+}
+
+// UpdateUser updates a user
+func UpdateUser(c *gin.Context) {
+	id, err := uuid.FromString(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var json updateUser
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user entity.User
+	user.ID = id
+
+	if err := _db.First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := _db.Model(&user).Updates(json).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
