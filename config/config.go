@@ -2,6 +2,11 @@ package config
 
 import "github.com/spf13/viper"
 
+// CORSConfig holds cors-related config
+type CORSConfig struct {
+	AllowedOrigins []string `mapstructure:"allowed_origins"`
+}
+
 // HTTPConfig holds http-related config
 type HTTPConfig struct {
 	Host string
@@ -13,6 +18,7 @@ type Config struct {
 	Prod bool
 
 	HTTP HTTPConfig `mapstructure:"http"`
+	CORS CORSConfig `mapstructure:"cors"`
 }
 
 // Load loads the config

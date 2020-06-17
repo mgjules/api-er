@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/JulesMike/api-er/config"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
@@ -35,6 +36,14 @@ func main() {
 	}
 	defer logger.Sync()
 
+	// Cors
+	corsCfg := cors.DefaultConfig()
+	if cfg.CORS.AllowedOrigins != nil && len(cfg.CORS.AllowedOrigins) > 0 {
+		corsCfg.AllowOrigins = cfg.CORS.AllowedOrigins
+	} else {
+		corsCfg.AllowAllOrigins = true
+	}
+
 	// Gin server
 	if cfg.Prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -45,6 +54,7 @@ func main() {
 	// Global middlewares
 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
 	r.Use(ginzap.RecoveryWithZap(logger, true))
+	r.Use(cors.New(corsCfg))
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	attachRoutes(r)
