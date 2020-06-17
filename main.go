@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/JulesMike/api-er/controller"
@@ -85,5 +86,12 @@ func main() {
 	// Run gin server
 	url := cfg.HTTP.Host + ":" + cfg.HTTP.Port
 	logger.Info("Gin server started on ", zap.String("url", url))
-	r.Run(url)
+	s := &http.Server{
+		Addr:           url,
+		Handler:        r,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+	s.ListenAndServe()
 }

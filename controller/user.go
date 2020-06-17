@@ -15,8 +15,8 @@ type createUser struct {
 }
 
 type updateUser struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" binding:""`
+	Password string `json:"password" binding:""`
 }
 
 // CreateUser creates a new user
