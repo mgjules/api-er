@@ -17,5 +17,8 @@
 # Temp directory
 tmp
 
+# App TOML Config
+*.toml
+
 # Dependency directories (remove the comment below to include it)
 # vendor/
