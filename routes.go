@@ -21,12 +21,4 @@ func attachRoutes(r *gin.Engine) {
 		users.PATCH("/:id", controller.UpdateUser)
 		users.DELETE("/:id", controller.DeleteUser)
 	}
-
-	// r.GET("/protected", func(c *gin.Context) {
-	// 	c.String(200, csrf.GetToken(c))
-	// })
-
-	// r.POST("/protected", func(c *gin.Context) {
-	// 	c.String(200, "CSRF token is valid")
-	// })
 }
