@@ -10,13 +10,13 @@ import (
 )
 
 type createUser struct {
-	Username string `json:"username" binding:"required,min=8"`
-	Password string `json:"password" binding:"required,min=8"`
+	Username string `json:"username" binding:"required,min=8"` // TODO: add validation
+	Password string `json:"password" binding:"required,min=8"` // TODO: add validation
 }
 
 type updateUser struct {
-	Username string `json:"username" binding:""`
-	Password string `json:"password" binding:""`
+	Username string `json:"username" binding:""` // TODO: add validation
+	Password string `json:"password" binding:""` // TODO: add validation
 }
 
 // CreateUser creates a new user
