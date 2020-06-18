@@ -7,6 +7,7 @@ type SecurityConfig struct {
 	PasswordSalt string `mapstructure:"password_salt"`
 	StoreSecret  string `mapstructure:"store_secret"`
 	SessionKey   string `mapstructure:"session_key"`
+	CSRFSecret   string `mapstructure:"csrf_secret"`
 }
 
 // DBConfig holds db-related config
