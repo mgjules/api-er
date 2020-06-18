@@ -14,8 +14,11 @@ const (
 	GuestUserRole  = ":guest:"
 )
 
-// UserSessionKey is used as user session key
+// UserSessionKey is the user session key
 const UserSessionKey = "user"
+
+// UserContextKey is the user context key
+const UserContextKey = "userctx"
 
 // User entity holds user information
 type User struct {

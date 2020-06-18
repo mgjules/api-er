@@ -1,3 +1,4 @@
+p, :guest:, /me, GET, deny
 p, :guest:, /users/, (GET)|(POST), deny
 p, :guest:, /users/:id, (GET)|(PATCH)|(DELETE), deny
 

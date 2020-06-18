@@ -22,8 +22,10 @@ func Auth(e *casbin.Enforcer) gin.HandlerFunc {
 			var user entity.User
 			user.ID = uuid.FromStringOrNil(userID.(string))
 			if user.ID != uuid.Nil {
-				if err := _db.Select("role").First(&user).Error; err == nil {
+				if err := _db.Select("created_at, updated_at, username, email, role, verified").First(&user).Error; err == nil {
 					userRole = user.Role
+
+					c.Set(entity.UserContextKey, user)
 				}
 			}
 		}
