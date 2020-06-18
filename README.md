@@ -1,6 +1,6 @@
 # API-er
 
-API-er is a simple Go boilerplate for building API services.
+API-er is a simple Go boilerplate for building REST API services.
 
 ## Core libraries
  - [Cobra](https://github.com/spf13/cobra)
