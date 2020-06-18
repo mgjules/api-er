@@ -24,6 +24,7 @@ func attachRoutes(r *gin.Engine) {
 	{
 		users.POST("/", controller.CreateUser)
 		users.GET("/", controller.ListUsers)
+		users.GET("/:id", controller.GetUser)
 		users.PATCH("/:id", controller.UpdateUser)
 		users.DELETE("/:id", controller.DeleteUser)
 	}

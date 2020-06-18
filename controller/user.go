@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/JulesMike/api-er/entity"
@@ -37,7 +38,31 @@ func CreateUser(c *gin.Context) {
 	helper.ResponseSuccess(c, "User created")
 }
 
-// ListUsers creates a new user
+// GetUser retrieves a single user
+func GetUser(c *gin.Context) {
+	id, err := uuid.FromString(c.Param("id"))
+	if err != nil {
+		helper.ResponseBadRequest(c, err.Error())
+		return
+	}
+
+	var user entity.User
+	user.ID = id
+
+	if err := _db.First(&user).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			helper.ResponseNotFound(c, err.Error())
+			return
+		}
+
+		helper.ResponseInternalServerError(c, err.Error())
+		return
+	}
+
+	helper.ResponseSuccessPayload(c, "User retrieved", user)
+}
+
+// ListUsers retrieves a list of user
 func ListUsers(c *gin.Context) {
 	users := []entity.User{}
 
@@ -68,7 +93,12 @@ func UpdateUser(c *gin.Context) {
 	user.ID = id
 
 	if err := _db.First(&user).Error; err != nil {
-		helper.ResponseNotFound(c, err.Error())
+		if gorm.IsRecordNotFoundError(err) {
+			helper.ResponseNotFound(c, err.Error())
+			return
+		}
+
+		helper.ResponseInternalServerError(c, err.Error())
 		return
 	}
 
@@ -80,7 +110,7 @@ func UpdateUser(c *gin.Context) {
 	helper.ResponseSuccessPayload(c, "User updated", user)
 }
 
-// DeleteUser updates a user
+// DeleteUser deletes a user
 func DeleteUser(c *gin.Context) {
 	id, err := uuid.FromString(c.Param("id"))
 	if err != nil {
