@@ -13,3 +13,6 @@ allowed_origins = ["http://localhost:8081"]
 
 [security]
 password_hash = "884bbbd8-4587-571b-9f23-3dca91e98a1c"
+store_secret = "59774dc1-7ad0-5745-b95d-645383ca34fb"
+session_key = "_api_er"
+csrf_secret = "3afb116d-a030-5518-adee-614a46833c90"
