@@ -1,0 +1,6 @@
+p, :guest:, /users/*, (GET)|(POST)|(PATCH)|(DELETE), deny
+
+p, :normal:, /panic, GET, deny
+
+g, :guest:, :normal:
+g, :normal:, :admin:

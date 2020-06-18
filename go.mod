@@ -3,6 +3,7 @@ module github.com/JulesMike/api-er
 go 1.14
 
 require (
+	github.com/casbin/casbin v1.9.1
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/gzip v0.0.1

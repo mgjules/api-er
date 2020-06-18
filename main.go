@@ -8,6 +8,7 @@ import (
 	"github.com/JulesMike/api-er/controller"
 	"github.com/JulesMike/api-er/middleware"
 	"github.com/JulesMike/api-er/security"
+	"github.com/casbin/casbin"
 
 	"github.com/JulesMike/api-er/config"
 	"github.com/gin-contrib/cors"
@@ -65,11 +66,14 @@ func main() {
 	autoMigrate(db)
 
 	controller.Init(db)
-
+	middleware.Init(db)
 	security.Init(cfg.Security.PasswordSalt)
 
 	// Cookie store
 	store := cookie.NewStore([]byte(cfg.Security.StoreSecret))
+
+	// Casbin (Authorization)
+	enforcer := casbin.NewEnforcer(cfg.Security.Casbin.Model, cfg.Security.Casbin.Policy)
 
 	// Gin server
 	if cfg.Prod {
@@ -85,6 +89,7 @@ func main() {
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(sessions.Sessions(cfg.Security.SessionKey, store))
 	r.Use(middleware.CSRF(cfg.Security.CSRFSecret))
+	r.Use(middleware.Auth(enforcer))
 
 	// Static Routes Middlewares
 	r.Use(static.Serve("/", static.LocalFile("./static", false)))

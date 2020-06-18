@@ -28,6 +28,13 @@ func Token(c *gin.Context) {
 
 // Login authenticates the user
 func Login(c *gin.Context) {
+	session := sessions.Default(c)
+
+	if session.Get(entity.UserSessionKey) != nil {
+		helper.ResponseBadRequest(c, "You are already logged in!")
+		return
+	}
+
 	var json login
 
 	if err := c.ShouldBindJSON(&json); err != nil {
@@ -57,8 +64,6 @@ func Login(c *gin.Context) {
 	// 	helper.ResponseUnauthorized(c, "User not verified")
 	// 	return
 	// }
-
-	session := sessions.Default(c)
 
 	session.Set(entity.UserSessionKey, user.ID.String())
 	if err := session.Save(); err != nil {

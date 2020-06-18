@@ -11,6 +11,7 @@ import (
 const (
 	AdminUserRole  = ":admin:"
 	NormalUserRole = ":normal:"
+	GuestUserRole  = ":guest:"
 )
 
 // UserSessionKey is used as user session key

@@ -2,12 +2,20 @@ package config
 
 import "github.com/spf13/viper"
 
+// CasbinConfig holds casbin-related config
+type CasbinConfig struct {
+	Model  string `mapstructure:"model"`
+	Policy string `mapstructure:"policy"`
+}
+
 // SecurityConfig holds security-related config
 type SecurityConfig struct {
 	PasswordSalt string `mapstructure:"password_salt"`
 	StoreSecret  string `mapstructure:"store_secret"`
 	SessionKey   string `mapstructure:"session_key"`
 	CSRFSecret   string `mapstructure:"csrf_secret"`
+
+	Casbin CasbinConfig `mapstructure:"casbin"`
 }
 
 // DBConfig holds db-related config

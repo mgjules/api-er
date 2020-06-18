@@ -6,38 +6,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ResponseUnauthorized wraps c.JSON
+// ResponseUnauthorized wraps c.AbortWithStatusJSON
 func ResponseUnauthorized(c *gin.Context, msg string) {
-	c.JSON(http.StatusUnauthorized, gin.H{"error": msg})
-	c.Abort()
+	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": msg})
 }
 
-// ResponseBadRequest wraps c.JSON
+// ResponseBadRequest wraps c.AbortWithStatusJSON
 func ResponseBadRequest(c *gin.Context, msg string) {
-	c.JSON(http.StatusBadRequest, gin.H{"error": msg})
-	c.Abort()
+	c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": msg})
 }
 
-// ResponseNotFound wraps c.JSON
+// ResponseNotFound wraps c.AbortWithStatusJSON
 func ResponseNotFound(c *gin.Context, msg string) {
-	c.JSON(http.StatusNotFound, gin.H{"error": msg})
-	c.Abort()
+	c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": msg})
 }
 
-// ResponseInternalServerError wraps c.JSON
+// ResponseInternalServerError wraps c.AbortWithStatusJSON
 func ResponseInternalServerError(c *gin.Context, msg string) {
-	c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
-	c.Abort()
+	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": msg})
 }
 
-// ResponseSuccess wraps c.JSON
+// ResponseSuccess wraps c.AbortWithStatusJSON
 func ResponseSuccess(c *gin.Context, msg string) {
-	c.JSON(http.StatusOK, gin.H{"success": msg})
-	c.Abort()
+	c.AbortWithStatusJSON(http.StatusOK, gin.H{"success": msg})
 }
 
-// ResponseSuccessPayload wraps c.JSON
+// ResponseSuccessPayload wraps c.AbortWithStatusJSON
 func ResponseSuccessPayload(c *gin.Context, msg string, payload interface{}) {
-	c.JSON(http.StatusOK, gin.H{"success": msg, "payload": payload})
-	c.Abort()
+	c.AbortWithStatusJSON(http.StatusOK, gin.H{"success": msg, "payload": payload})
 }
