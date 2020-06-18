@@ -1,4 +1,5 @@
-p, :guest:, /users/*, (GET)|(POST)|(PATCH)|(DELETE), deny
+p, :guest:, /users/, (GET)|(POST), deny
+p, :guest:, /users/:id, (GET)|(PATCH)|(DELETE), deny
 
 p, :normal:, /panic, GET, deny
 
