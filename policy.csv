@@ -1,8 +1,8 @@
-p, :guest:, /me, GET, deny
-p, :guest:, /users/, (GET)|(POST), deny
-p, :guest:, /users/:id, (GET)|(PATCH)|(DELETE), deny
+p, :guest:, /api/me, GET, deny
+p, :guest:, /api/users/, (GET)|(POST), deny
+p, :guest:, /api/users/:id, (GET)|(PATCH)|(DELETE), deny
 
-p, :normal:, /panic, GET, deny
+p, :normal:, /api/panic, GET, deny
 
 g, :guest:, :normal:
 g, :normal:, :admin:

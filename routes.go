@@ -6,19 +6,21 @@ import (
 )
 
 func attachRoutes(r *gin.Engine) {
-	r.GET("/ping", controller.Ping)
+	api := r.Group("/api")
+	{
+		api.GET("/ping", controller.Ping)
 
-	r.GET("/panic", controller.Panic)
+		api.GET("/panic", controller.Panic)
 
-	r.GET("/token", controller.Token)
+		api.GET("/token", controller.Token)
 
 	// Security routes
-	r.POST("/login", controller.Login)
-	r.POST("/logout", controller.Logout)
-	r.GET("/me", controller.Me)
+		api.POST("/login", controller.Login)
+		api.POST("/logout", controller.Logout)
+		api.GET("/me", controller.Me)
 
 	// Users routes
-	users := r.Group("/users")
+		users := api.Group("/users")
 	{
 		users.POST("/", controller.CreateUser)
 		users.GET("/", controller.ListUsers)
