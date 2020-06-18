@@ -13,11 +13,16 @@ const (
 	NormalUserRole = ":normal:"
 )
 
+// UserSessionKey is used as user session key
+const UserSessionKey = "user"
+
 // User entity holds user information
 type User struct {
 	Entity
 	Username string `gorm:"unique;not null"`
 	Password string `gorm:"not null"`
+	Email    string `gorm:"not null"`
+	Verified bool   `gorm:"not null"`
 	Role     string `gorm:"default:':normal:'"`
 }
 

@@ -12,6 +12,10 @@ func attachRoutes(r *gin.Engine) {
 
 	r.GET("/token", controller.Token)
 
+	// Security routes
+	r.POST("/login", controller.Login)
+	r.POST("/logout", controller.Logout)
+
 	// Users routes
 	users := r.Group("/users")
 	{
