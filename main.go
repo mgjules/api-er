@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/JulesMike/api-er/controller"
+	"github.com/JulesMike/api-er/middleware"
 	"github.com/JulesMike/api-er/security"
 
 	"github.com/JulesMike/api-er/config"
@@ -83,7 +84,7 @@ func main() {
 	r.Use(cors.New(corsCfg))
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(sessions.Sessions(cfg.Security.SessionKey, store))
-	// r.Use(middleware.CSRF(cfg.Security.CSRFSecret))
+	r.Use(middleware.CSRF(cfg.Security.CSRFSecret))
 
 	// Static Routes Middlewares
 	r.Use(static.Serve("/", static.LocalFile("./static", false)))
