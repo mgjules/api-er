@@ -15,7 +15,7 @@ const (
 
 // User entity holds user information
 type User struct {
-	Base
+	Entity
 	Username string `gorm:"unique;not null"`
 	Password string `gorm:"not null"`
 	Role     string `gorm:"default:':normal:'"`
