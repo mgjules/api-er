@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"net/http"
-
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/JulesMike/api-er/entity"
+	"github.com/JulesMike/api-er/helper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,20 +23,16 @@ func CreateUser(c *gin.Context) {
 	var json createUser
 
 	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		helper.ResponseBadRequest(c, err.Error())
 	}
 
 	user := entity.User{Username: json.Username, Password: json.Password}
 
 	if err := _db.Create(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		helper.ResponseBadRequest(c, err.Error())
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "user created",
-	})
+	helper.ResponseSuccess(c, "User created")
 }
 
 // ListUsers creates a new user
@@ -45,40 +40,35 @@ func ListUsers(c *gin.Context) {
 	users := []entity.User{}
 
 	if err := _db.Find(&users).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		helper.ResponseInternalServerError(c, err.Error())
 	}
 
-	c.JSON(http.StatusOK, users)
+	helper.ResponseSuccessPayload(c, "Users retrieved", users)
 }
 
 // UpdateUser updates a user
 func UpdateUser(c *gin.Context) {
 	id, err := uuid.FromString(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		helper.ResponseBadRequest(c, err.Error())
 	}
 
 	var json updateUser
 
 	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		helper.ResponseBadRequest(c, err.Error())
 	}
 
 	var user entity.User
 	user.ID = id
 
 	if err := _db.First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
+		helper.ResponseNotFound(c, err.Error())
 	}
 
 	if err := _db.Model(&user).Updates(json).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		helper.ResponseInternalServerError(c, err.Error())
 	}
 
-	c.JSON(http.StatusOK, user)
+	helper.ResponseSuccessPayload(c, "User updated", user)
 }
