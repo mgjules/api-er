@@ -79,3 +79,22 @@ func UpdateUser(c *gin.Context) {
 
 	helper.ResponseSuccessPayload(c, "User updated", user)
 }
+
+// DeleteUser updates a user
+func DeleteUser(c *gin.Context) {
+	id, err := uuid.FromString(c.Param("id"))
+	if err != nil {
+		helper.ResponseBadRequest(c, err.Error())
+		return
+	}
+
+	var user entity.User
+	user.ID = id
+
+	if err := _db.Delete(&user).Error; err != nil {
+		helper.ResponseInternalServerError(c, err.Error())
+		return
+	}
+
+	helper.ResponseSuccess(c, "User deleted")
+}
