@@ -15,7 +15,6 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-contrib/static"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -90,9 +89,6 @@ func main() {
 	r.Use(sessions.Sessions(cfg.Security.SessionKey, store))
 	r.Use(middleware.CSRF(cfg.Security.CSRFSecret))
 	r.Use(middleware.Auth(enforcer))
-
-	// Static Routes Middlewares
-	r.Use(static.Serve("/", static.LocalFile("./static", false)))
 
 	attachRoutes(r)
 
