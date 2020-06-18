@@ -1,3 +1,4 @@
+p, :guest:, /api/status, GET, deny
 p, :guest:, /api/me, GET, deny
 p, :guest:, /api/users/, (GET)|(POST), deny
 p, :guest:, /api/users/:id, (GET)|(PATCH)|(DELETE), deny

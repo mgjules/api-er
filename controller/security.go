@@ -92,6 +92,7 @@ func Logout(c *gin.Context) {
 	helper.ResponseSuccess(c, "Logout successful")
 }
 
+// Me returns self user
 func Me(c *gin.Context) {
 	user, ok := helper.UserFromContext(c)
 	if !ok {
@@ -100,4 +101,9 @@ func Me(c *gin.Context) {
 	}
 
 	helper.ResponseSuccessPayload(c, "Self user retrieved", user)
+}
+
+// Status confirms if logged in
+func Status(c *gin.Context) {
+	helper.ResponseSuccess(c, "You are logged in!")
 }

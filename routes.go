@@ -18,6 +18,7 @@ func attachRoutes(r *gin.Engine) {
 		api.POST("/login", controller.Login)
 		api.POST("/logout", controller.Logout)
 		api.GET("/me", controller.Me)
+		api.GET("/status", controller.Status)
 
 		// Users routes
 		users := api.Group("/users")
