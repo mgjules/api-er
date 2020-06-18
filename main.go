@@ -11,6 +11,8 @@ import (
 	"github.com/JulesMike/api-er/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-contrib/static"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
@@ -65,6 +67,9 @@ func main() {
 
 	security.Init(cfg.Security.PasswordSalt)
 
+	// Cookie store
+	store := cookie.NewStore([]byte(cfg.Security.StoreSecret))
+
 	// Gin server
 	if cfg.Prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -77,6 +82,7 @@ func main() {
 	r.Use(ginzap.RecoveryWithZap(logger, true))
 	r.Use(cors.New(corsCfg))
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
+	r.Use(sessions.Sessions(cfg.Security.SessionKey, store))
 
 	// Static Routes Middlewares
 	r.Use(static.Serve("/", static.LocalFile("./static", false)))

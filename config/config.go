@@ -5,6 +5,8 @@ import "github.com/spf13/viper"
 // SecurityConfig holds security-related config
 type SecurityConfig struct {
 	PasswordSalt string `mapstructure:"password_salt"`
+	StoreSecret  string `mapstructure:"store_secret"`
+	SessionKey   string `mapstructure:"session_key"`
 }
 
 // DBConfig holds db-related config
