@@ -16,3 +16,8 @@ func Ping(c *gin.Context) {
 func Panic(c *gin.Context) {
 	panic("oh la la!")
 }
+
+// NotFound is used as not found handler
+func NotFound(c *gin.Context) {
+	helper.ResponseNotFound(c, "Nothing to see here!")
+}

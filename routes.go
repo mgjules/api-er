@@ -14,18 +14,21 @@ func attachRoutes(r *gin.Engine) {
 
 		api.GET("/token", controller.Token)
 
-	// Security routes
+		// Security routes
 		api.POST("/login", controller.Login)
 		api.POST("/logout", controller.Logout)
 		api.GET("/me", controller.Me)
 
-	// Users routes
+		// Users routes
 		users := api.Group("/users")
-	{
-		users.POST("/", controller.CreateUser)
-		users.GET("/", controller.ListUsers)
-		users.GET("/:id", controller.GetUser)
-		users.PATCH("/:id", controller.UpdateUser)
-		users.DELETE("/:id", controller.DeleteUser)
+		{
+			users.POST("/", controller.CreateUser)
+			users.GET("/", controller.ListUsers)
+			users.GET("/:id", controller.GetUser)
+			users.PATCH("/:id", controller.UpdateUser)
+			users.DELETE("/:id", controller.DeleteUser)
+		}
 	}
+
+	r.NoRoute(controller.NotFound)
 }
