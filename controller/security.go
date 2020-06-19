@@ -17,21 +17,19 @@ type login struct {
 
 // TokenMismatch is used for ErrorFunc of CSRF middleware
 func TokenMismatch(c *gin.Context) {
-	helper.ResponseBadRequest(c, "CSRF Token mismatch")
+	helper.ResponseBadRequest(c, "csrftoken:invalid")
 }
 
 // Token replies with a CSRF token
 func Token(c *gin.Context) {
 	token := csrf.GetToken(c)
-	helper.ResponseSuccessPayload(c, "CSRF Token", token)
+	helper.ResponseSuccessPayload(c, "csrftoken:retrieved", token)
 }
 
 // Login authenticates the user
 func Login(c *gin.Context) {
-	session := sessions.Default(c)
-
-	if session.Get(entity.UserSessionKey) != nil {
-		helper.ResponseBadRequest(c, "You are already logged in!")
+	if _, ok := helper.UserFromContext(c); ok {
+		helper.ResponseBadRequest(c, "auth:alreadyloggedin")
 		return
 	}
 
@@ -65,23 +63,25 @@ func Login(c *gin.Context) {
 	// 	return
 	// }
 
+	session := sessions.Default(c)
+
 	session.Set(entity.UserSessionKey, user.ID.String())
 	if err := session.Save(); err != nil {
 		helper.ResponseInternalServerError(c, err.Error())
 		return
 	}
 
-	helper.ResponseSuccess(c, "Login successful")
+	helper.ResponseSuccess(c, "auth:loggedin")
 }
 
 // Logout deauthenticates the user
 func Logout(c *gin.Context) {
-	session := sessions.Default(c)
-
-	if session.Get(entity.UserSessionKey) == nil {
-		helper.ResponseBadRequest(c, "Invalid session token")
+	if _, ok := helper.UserFromContext(c); !ok {
+		helper.ResponseBadRequest(c, "auth:notloggedin")
 		return
 	}
+
+	session := sessions.Default(c)
 
 	session.Delete(entity.UserSessionKey)
 	if err := session.Save(); err != nil {
@@ -89,21 +89,21 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	helper.ResponseSuccess(c, "Logout successful")
+	helper.ResponseSuccess(c, "auth:loggedout")
 }
 
 // Me returns self user
 func Me(c *gin.Context) {
 	user, ok := helper.UserFromContext(c)
 	if !ok {
-		helper.ResponseBadRequest(c, "You must be logged in!")
+		helper.ResponseBadRequest(c, "auth:notloggedin")
 		return
 	}
 
-	helper.ResponseSuccessPayload(c, "Self user retrieved", user)
+	helper.ResponseSuccessPayload(c, "auth:me", user)
 }
 
 // Status confirms if logged in
 func Status(c *gin.Context) {
-	helper.ResponseSuccess(c, "You are logged in!")
+	helper.ResponseSuccess(c, "auth:ok")
 }

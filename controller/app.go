@@ -19,5 +19,5 @@ func Panic(c *gin.Context) {
 
 // NotFound is used as not found handler
 func NotFound(c *gin.Context) {
-	helper.ResponseNotFound(c, "Nothing to see here!")
+	helper.ResponseNotFound(c, "app:route:unknown")
 }

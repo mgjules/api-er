@@ -31,11 +31,11 @@ func CreateUser(c *gin.Context) {
 	user := entity.User{Username: json.Username, Password: json.Password}
 
 	if err := _db.Create(&user).Error; err != nil {
-		helper.ResponseBadRequest(c, err.Error())
+		helper.ResponseInternalServerError(c, err.Error())
 		return
 	}
 
-	helper.ResponseSuccess(c, "User created")
+	helper.ResponseSuccess(c, "user:created")
 }
 
 // GetUser retrieves a single user
@@ -51,7 +51,7 @@ func GetUser(c *gin.Context) {
 
 	if err := _db.First(&user).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			helper.ResponseNotFound(c, err.Error())
+			helper.ResponseNotFound(c, "user:notfound")
 			return
 		}
 
@@ -59,7 +59,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	helper.ResponseSuccessPayload(c, "User retrieved", user)
+	helper.ResponseSuccessPayload(c, "user:retrieved", user)
 }
 
 // ListUsers retrieves a list of user
@@ -71,7 +71,7 @@ func ListUsers(c *gin.Context) {
 		return
 	}
 
-	helper.ResponseSuccessPayload(c, "Users retrieved", users)
+	helper.ResponseSuccessPayload(c, "users:retrieved", users)
 }
 
 // UpdateUser updates a user
@@ -94,7 +94,7 @@ func UpdateUser(c *gin.Context) {
 
 	if err := _db.First(&user).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			helper.ResponseNotFound(c, err.Error())
+			helper.ResponseNotFound(c, "user:notfound")
 			return
 		}
 
@@ -107,7 +107,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	helper.ResponseSuccessPayload(c, "User updated", user)
+	helper.ResponseSuccessPayload(c, "user:updated", user)
 }
 
 // DeleteUser deletes a user
@@ -121,10 +121,20 @@ func DeleteUser(c *gin.Context) {
 	var user entity.User
 	user.ID = id
 
+	if err := _db.First(&user).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			helper.ResponseNotFound(c, "user:notfound")
+			return
+		}
+
+		helper.ResponseInternalServerError(c, err.Error())
+		return
+	}
+
 	if err := _db.Delete(&user).Error; err != nil {
 		helper.ResponseInternalServerError(c, err.Error())
 		return
 	}
 
-	helper.ResponseSuccess(c, "User deleted")
+	helper.ResponseSuccess(c, "user:deleted")
 }

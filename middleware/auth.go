@@ -33,7 +33,7 @@ func Auth(e *casbin.Enforcer) gin.HandlerFunc {
 		r := c.Request
 
 		if !e.Enforce(userRole, r.RequestURI, r.Method) {
-			helper.ResponseUnauthorized(c, "You are not allowed!")
+			helper.ResponseUnauthorized(c, "auth:notallowed")
 			return
 		}
 
