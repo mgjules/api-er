@@ -9,19 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type createUser struct {
-	Username string `json:"username" binding:"required,min=8"` // TODO: add validation
-	Password string `json:"password" binding:"required,min=8"` // TODO: add validation
-}
-
-type updateUser struct {
-	Username string `json:"username" binding:""` // TODO: add validation
-	Password string `json:"password" binding:""` // TODO: add validation
+// TODO: add validation
+type userJSON struct {
+	Username string `json:"username" binding:"required,min=8"`
+	Password string `json:"password" binding:"required,min=8"`
+	Email    string `json:"email" binding:"required,email"`
+	Verified bool   `json:"verified" binding:""`
 }
 
 // CreateUser creates a new user
 func CreateUser(c *gin.Context) {
-	var json createUser
+	var json userJSON
 
 	if err := c.ShouldBindJSON(&json); err != nil {
 		helper.ResponseBadRequest(c, err.Error())
@@ -82,7 +80,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	var json updateUser
+	var json userJSON
 
 	if err := c.ShouldBindJSON(&json); err != nil {
 		helper.ResponseBadRequest(c, err.Error())
