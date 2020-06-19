@@ -7,9 +7,9 @@ import (
 )
 
 // CSRF is the csrf middleware
-func CSRF(secret string) gin.HandlerFunc {
+func CSRF(secret string, securityCtrl *controller.Security) gin.HandlerFunc {
 	return csrf.Middleware(csrf.Options{
 		Secret:    secret,
-		ErrorFunc: controller.TokenMismatch,
+		ErrorFunc: securityCtrl.TokenMismatch,
 	})
 }

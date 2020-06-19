@@ -1,15 +1,15 @@
 package controller
 
 import (
-	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/JulesMike/api-er/entity"
 	"github.com/JulesMike/api-er/helper"
+	"github.com/JulesMike/api-er/repository"
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: add validation
+// TODO: add proper validation
 type userJSON struct {
 	Username string `json:"username" binding:"required,min=8"`
 	Password string `json:"password" binding:"required,min=8"`
@@ -17,122 +17,130 @@ type userJSON struct {
 	Verified bool   `json:"verified" binding:""`
 }
 
-// CreateUser creates a new user
-func CreateUser(c *gin.Context) {
+// User represents the user controller
+type User struct {
+	userRepo *repository.User
+}
+
+// NewUser returns a new User
+func NewUser(userRepo *repository.User) *User {
+	return &User{userRepo: userRepo}
+}
+
+// Create creates a new user
+func (c *User) Create(ctx *gin.Context) {
 	var json userJSON
 
-	if err := c.ShouldBindJSON(&json); err != nil {
-		helper.ResponseBadRequest(c, err.Error())
+	if err := ctx.ShouldBindJSON(&json); err != nil {
+		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	user := entity.User{Username: json.Username, Password: json.Password}
+	user := &entity.User{
+		Username: json.Username,
+		Password: json.Password,
+		Email:    json.Email,
+		Verified: json.Verified,
+	}
 
-	if err := _db.Create(&user).Error; err != nil {
-		helper.ResponseInternalServerError(c, err.Error())
+	user, err := c.userRepo.Create(user)
+	if err != nil {
+		helper.ResponseInternalServerError(ctx, err.Error())
 		return
 	}
 
-	helper.ResponseSuccess(c, "user:created")
+	helper.ResponseSuccessPayload(ctx, "user:created", user)
 }
 
-// GetUser retrieves a single user
-func GetUser(c *gin.Context) {
-	id, err := uuid.FromString(c.Param("id"))
+// Get retrieves a single user
+func (c *User) Get(ctx *gin.Context) {
+	id, err := uuid.FromString(ctx.Param("id"))
 	if err != nil {
-		helper.ResponseBadRequest(c, err.Error())
+		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	var user entity.User
+	user := &entity.User{}
 	user.ID = id
 
-	if err := _db.First(&user).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			helper.ResponseNotFound(c, "user:notfound")
+	user, err = c.userRepo.Get(user)
+	if err != nil {
+		if err == repository.ErrRecordNotFound {
+			helper.ResponseNotFound(ctx, "user:notfound")
 			return
 		}
 
-		helper.ResponseInternalServerError(c, err.Error())
+		helper.ResponseInternalServerError(ctx, "user:internalerror")
 		return
 	}
 
-	helper.ResponseSuccessPayload(c, "user:retrieved", user)
+	helper.ResponseSuccessPayload(ctx, "user:retrieved", user)
 }
 
-// ListUsers retrieves a list of user
-func ListUsers(c *gin.Context) {
-	users := []entity.User{}
-
-	if err := _db.Find(&users).Error; err != nil {
-		helper.ResponseInternalServerError(c, err.Error())
-		return
-	}
-
-	helper.ResponseSuccessPayload(c, "users:retrieved", users)
-}
-
-// UpdateUser updates a user
-func UpdateUser(c *gin.Context) {
-	id, err := uuid.FromString(c.Param("id"))
+// List retrieves a list of user
+func (c *User) List(ctx *gin.Context) {
+	users, err := c.userRepo.List()
 	if err != nil {
-		helper.ResponseBadRequest(c, err.Error())
+		helper.ResponseInternalServerError(ctx, err.Error())
+		return
+	}
+
+	helper.ResponseSuccessPayload(ctx, "users:retrieved", users)
+}
+
+// Update updates a user
+func (c *User) Update(ctx *gin.Context) {
+	id, err := uuid.FromString(ctx.Param("id"))
+	if err != nil {
+		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
 	var json userJSON
 
-	if err := c.ShouldBindJSON(&json); err != nil {
-		helper.ResponseBadRequest(c, err.Error())
+	if err := ctx.ShouldBindJSON(&json); err != nil {
+		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	var user entity.User
+	user := &entity.User{}
 	user.ID = id
 
-	if err := _db.First(&user).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			helper.ResponseNotFound(c, "user:notfound")
+	user, err = c.userRepo.Update(user, json)
+	if err != nil {
+		if err == repository.ErrRecordNotFound {
+			helper.ResponseNotFound(ctx, "user:notfound")
 			return
 		}
 
-		helper.ResponseInternalServerError(c, err.Error())
+		helper.ResponseInternalServerError(ctx, err.Error())
 		return
 	}
 
-	if err := _db.Model(&user).Updates(json).Error; err != nil {
-		helper.ResponseInternalServerError(c, err.Error())
-		return
-	}
-
-	helper.ResponseSuccessPayload(c, "user:updated", user)
+	helper.ResponseSuccessPayload(ctx, "user:updated", user)
 }
 
-// DeleteUser deletes a user
-func DeleteUser(c *gin.Context) {
-	id, err := uuid.FromString(c.Param("id"))
+// Delete deletes a user
+func (c *User) Delete(ctx *gin.Context) {
+	id, err := uuid.FromString(ctx.Param("id"))
 	if err != nil {
-		helper.ResponseBadRequest(c, err.Error())
+		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	var user entity.User
+	user := &entity.User{}
 	user.ID = id
 
-	if err := _db.First(&user).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			helper.ResponseNotFound(c, "user:notfound")
+	user, err = c.userRepo.Delete(user)
+	if err != nil {
+		if err == repository.ErrRecordNotFound {
+			helper.ResponseNotFound(ctx, "user:notfound")
 			return
 		}
 
-		helper.ResponseInternalServerError(c, err.Error())
+		helper.ResponseInternalServerError(ctx, err.Error())
 		return
 	}
 
-	if err := _db.Delete(&user).Error; err != nil {
-		helper.ResponseInternalServerError(c, err.Error())
-		return
-	}
-
-	helper.ResponseSuccess(c, "user:deleted")
+	helper.ResponseSuccessPayload(ctx, "user:deleted", user)
 }

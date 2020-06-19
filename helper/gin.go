@@ -3,7 +3,6 @@ package helper
 import (
 	"net/http"
 
-	"github.com/JulesMike/api-er/entity"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,19 +34,4 @@ func ResponseSuccess(c *gin.Context, msg interface{}) {
 // ResponseSuccessPayload wraps c.AbortWithStatusJSON
 func ResponseSuccessPayload(c *gin.Context, msg, payload interface{}) {
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"success": msg, "payload": payload})
-}
-
-// UserFromContext returns the user entity from gin.Context
-func UserFromContext(c *gin.Context) (*entity.User, bool) {
-	v, ok := c.Get(entity.UserContextKey)
-	if !ok {
-		return nil, false
-	}
-
-	user, ok := v.(entity.User)
-	if !ok {
-		return nil, false
-	}
-
-	return &user, true
 }

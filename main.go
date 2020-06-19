@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/JulesMike/api-er/service"
+
 	"github.com/JulesMike/api-er/controller"
 	"github.com/JulesMike/api-er/middleware"
-	"github.com/JulesMike/api-er/security"
+	"github.com/JulesMike/api-er/repository"
 	"github.com/casbin/casbin"
 
 	"github.com/JulesMike/api-er/config"
@@ -65,9 +67,16 @@ func main() {
 
 	autoMigrate(db)
 
-	controller.Init(db)
-	middleware.Init(db)
-	security.Init(cfg.Security.PasswordSalt)
+	// Services
+	securitySvc := service.NewSecurity(cfg.Security.PasswordSalt)
+
+	// Repositories
+	userRepo := repository.NewUser(db, securitySvc)
+
+	// Controllers
+	appCtrl := controller.NewApp(userRepo)
+	securityCtrl := controller.NewSecurity(userRepo, securitySvc)
+	userCtrl := controller.NewUser(userRepo)
 
 	// Cookie store
 	store := cookie.NewStore([]byte(cfg.Security.StoreSecret))
@@ -88,13 +97,14 @@ func main() {
 	r.Use(cors.New(corsCfg))
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(sessions.Sessions(cfg.Security.SessionKey, store))
-	r.Use(middleware.CSRF(cfg.Security.CSRFSecret))
-	r.Use(middleware.Auth(enforcer))
+	r.Use(middleware.CSRF(cfg.Security.CSRFSecret, securityCtrl))
+	r.Use(middleware.Auth(enforcer, userRepo))
 
 	// Serve public directory
 	r.Use(static.Serve("/", static.LocalFile("./public", false)))
 
-	attachRoutes(r)
+	// Gin Routes
+	attachRoutes(r, appCtrl, securityCtrl, userCtrl)
 
 	// Run gin server
 	url := cfg.HTTP.Host + ":" + cfg.HTTP.Port

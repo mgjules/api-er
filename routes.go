@@ -5,31 +5,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func attachRoutes(r *gin.Engine) {
+func attachRoutes(
+	r *gin.Engine,
+	appCtrl *controller.App,
+	securityCtrl *controller.Security,
+	userCtrl *controller.User,
+) {
 	api := r.Group("/api")
 	{
-		api.GET("/ping", controller.Ping)
+		// App routes
+		api.GET("/ping", appCtrl.Ping)
 
-		api.GET("/panic", controller.Panic)
-
-		api.GET("/token", controller.Token)
+		api.GET("/panic", appCtrl.Panic)
 
 		// Security routes
-		api.POST("/login", controller.Login)
-		api.POST("/logout", controller.Logout)
-		api.GET("/me", controller.Me)
-		api.GET("/status", controller.Status)
+		api.GET("/token", securityCtrl.Token)
+		api.POST("/login", securityCtrl.Login)
+		api.POST("/logout", securityCtrl.Logout)
+		api.GET("/me", securityCtrl.Me)
+		api.GET("/status", securityCtrl.Status)
 
 		// Users routes
 		users := api.Group("/users")
 		{
-			users.POST("/", controller.CreateUser)
-			users.GET("/", controller.ListUsers)
-			users.GET("/:id", controller.GetUser)
-			users.PATCH("/:id", controller.UpdateUser)
-			users.DELETE("/:id", controller.DeleteUser)
+			users.POST("/", userCtrl.Create)
+			users.GET("/", userCtrl.List)
+			users.GET("/:id", userCtrl.Get)
+			users.PATCH("/:id", userCtrl.Update)
+			users.DELETE("/:id", userCtrl.Delete)
 		}
 	}
 
-	r.NoRoute(controller.NotFound)
+	r.NoRoute(appCtrl.NotFound)
 }
