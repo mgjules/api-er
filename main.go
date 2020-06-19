@@ -30,8 +30,6 @@ import (
 const AppName = "API/er"
 
 func main() {
-	var err error
-
 	// Config
 	cfg, err := config.Load()
 	if err != nil {
@@ -65,6 +63,7 @@ func main() {
 	}
 	defer db.Close()
 
+	// Migrations
 	autoMigrate(db)
 
 	// Services
