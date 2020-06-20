@@ -97,7 +97,7 @@ func main() {
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(sessions.Sessions(cfg.Security.SessionKey, store))
 	r.Use(middleware.CSRF(cfg.Security.CSRFSecret, securityCtrl))
-	r.Use(middleware.Auth(enforcer, userRepo))
+	r.Use(middleware.Auth(enforcer, securitySvc, userRepo))
 
 	// Serve public directory
 	r.Use(static.Serve("/", static.LocalFile("./public", false)))

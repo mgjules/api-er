@@ -1,8 +1,12 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/JulesMike/api-er/entity"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -53,4 +57,36 @@ func (s *Security) UserFromContext(ctx *gin.Context) (*entity.User, bool) {
 	}
 
 	return user, true
+}
+
+// UserIDFromSessionContext returns the user ID from gin.Context
+func (s *Security) UserIDFromSessionContext(ctx *gin.Context) (uuid.UUID, error) {
+	session := sessions.Default(ctx)
+
+	rawUserID := session.Get(entity.UserSessionKey)
+
+	strUserID, ok := rawUserID.(string)
+	if !ok {
+		return uuid.Nil, errors.New("can't convert session userID to string")
+	}
+
+	return uuid.FromString(strUserID)
+}
+
+// SetUserIDSessionContext sets user ID in gin.Context
+func (s *Security) SetUserIDSessionContext(ctx *gin.Context, userID string) error {
+	session := sessions.Default(ctx)
+
+	session.Set(entity.UserSessionKey, userID)
+
+	return session.Save()
+}
+
+// DeleteUserIDSessionContext sets user ID in gin.Context
+func (s *Security) DeleteUserIDSessionContext(ctx *gin.Context) error {
+	session := sessions.Default(ctx)
+
+	session.Delete(entity.UserSessionKey)
+
+	return session.Save()
 }

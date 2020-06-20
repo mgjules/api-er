@@ -5,7 +5,6 @@ import (
 	"github.com/JulesMike/api-er/helper"
 	"github.com/JulesMike/api-er/repository"
 	"github.com/JulesMike/api-er/service"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -69,15 +68,13 @@ func (c *Security) Login(ctx *gin.Context) {
 		return
 	}
 
+	// TODO: when I get the register user done
 	// if !user.Verified {
 	// 	helper.ResponseUnauthorized(ctx, "auth:user:notverified")
 	// 	return
 	// }
 
-	session := sessions.Default(ctx)
-
-	session.Set(entity.UserSessionKey, user.ID.String())
-	if err := session.Save(); err != nil {
+	if err := c.securitySvc.SetUserIDSessionContext(ctx, user.ID.String()); err != nil {
 		helper.ResponseInternalServerError(ctx, err.Error())
 		return
 	}
@@ -92,10 +89,7 @@ func (c *Security) Logout(ctx *gin.Context) {
 		return
 	}
 
-	session := sessions.Default(ctx)
-
-	session.Delete(entity.UserSessionKey)
-	if err := session.Save(); err != nil {
+	if err := c.securitySvc.DeleteUserIDSessionContext(ctx); err != nil {
 		helper.ResponseInternalServerError(ctx, err.Error())
 		return
 	}
