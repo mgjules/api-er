@@ -1,16 +1,18 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/JulesMike/api-er/service"
-
-	"github.com/JulesMike/api-er/controller"
-	"github.com/JulesMike/api-er/middleware"
-	"github.com/JulesMike/api-er/repository"
+	"github.com/JulesMike/api-er/app"
+	"github.com/JulesMike/api-er/helper"
+	"github.com/JulesMike/api-er/security"
+	"github.com/JulesMike/api-er/user"
 	"github.com/casbin/casbin"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/JulesMike/api-er/config"
 	"github.com/gin-contrib/cors"
@@ -20,7 +22,6 @@ import (
 	"github.com/gin-contrib/static"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -57,25 +58,27 @@ func main() {
 	}
 
 	// Database
-	db, err := gorm.Open(cfg.DB.Dialect, cfg.DB.Name)
+	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.DB.URI))
 	if err != nil {
 		logger.Fatal("Can't connect to DB", zap.Error(err))
 	}
-	defer db.Close()
 
-	// Migrations
-	autoMigrate(db)
+	if err = client.Connect(context.Background()); err != nil {
+		logger.Fatal("Can't connect to DB", zap.Error(err))
+	}
+
+	db := client.Database(cfg.DB.Name)
 
 	// Services
-	securitySvc := service.NewSecurity(cfg.Security.PasswordSalt)
+	userSvc := user.NewService(cfg.Security.PasswordSalt)
 
 	// Repositories
-	userRepo := repository.NewUser(db, securitySvc)
+	userRepo := user.NewRepository(db, userSvc)
 
 	// Controllers
-	appCtrl := controller.NewApp(userRepo)
-	securityCtrl := controller.NewSecurity(userRepo, securitySvc)
-	userCtrl := controller.NewUser(userRepo)
+	appCtrl := app.NewController()
+	securityCtrl := security.NewController(userRepo, userSvc)
+	userCtrl := user.NewController(userRepo)
 
 	// Cookie store
 	store := cookie.NewStore([]byte(cfg.Security.StoreSecret))
@@ -96,14 +99,22 @@ func main() {
 	r.Use(cors.New(corsCfg))
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(sessions.Sessions(cfg.Security.SessionKey, store))
-	r.Use(middleware.CSRF(cfg.Security.CSRFSecret, securityCtrl))
-	r.Use(middleware.Auth(enforcer, securitySvc, userRepo))
+	r.Use(security.CSRF(cfg.Security.CSRFSecret, securityCtrl))
+	r.Use(user.Auth(enforcer, userSvc, userRepo))
 
 	// Serve public directory
 	r.Use(static.Serve("/", static.LocalFile("./public", false)))
 
+	// Gin Routes: Not Found
+	r.NoRoute(func(ctx *gin.Context) {
+		helper.ResponseNotFound(ctx, "app:route:unknown")
+	})
+
 	// Gin Routes
-	attachRoutes(r, appCtrl, securityCtrl, userCtrl)
+	api := r.Group("/api")
+	for _, ctrl := range []Controller{appCtrl, securityCtrl, userCtrl} {
+		ctrl.AttachRoutes(api)
+	}
 
 	// Run gin server
 	url := cfg.HTTP.Host + ":" + cfg.HTTP.Port

@@ -1,49 +1,60 @@
-package controller
+package user
 
 import (
-	uuid "github.com/satori/go.uuid"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/JulesMike/api-er/entity"
 	"github.com/JulesMike/api-er/helper"
-	"github.com/JulesMike/api-er/repository"
 	"github.com/gin-gonic/gin"
 )
 
 // TODO: add proper validation
-type userJSON struct {
+type reqJSON struct {
 	Username string `json:"username" binding:"required,min=8"`
 	Password string `json:"password" binding:"required,min=8"`
 	Email    string `json:"email" binding:"required,email"`
 	Verified bool   `json:"verified" binding:""`
 }
 
-// User represents the user controller
-type User struct {
-	userRepo *repository.User
+// Controller represents the user controller
+type Controller struct {
+	userRepo *Repository
 }
 
-// NewUser returns a new User
-func NewUser(userRepo *repository.User) *User {
-	return &User{userRepo: userRepo}
+// NewController returns a new User
+func NewController(userRepo *Repository) *Controller {
+	return &Controller{userRepo: userRepo}
+}
+
+// AttachRoutes attaches the controller's routes to gin.RouterGroup
+func (c *Controller) AttachRoutes(r *gin.RouterGroup) {
+	users := r.Group("/users")
+	{
+		users.POST("/", c.Create)
+		users.GET("/", c.List)
+		users.GET("/:id", c.Get)
+		users.PATCH("/:id", c.Update)
+		users.DELETE("/:id", c.Delete)
+	}
 }
 
 // Create creates a new user
-func (c *User) Create(ctx *gin.Context) {
-	var json userJSON
+func (c *Controller) Create(ctx *gin.Context) {
+	var json reqJSON
 
 	if err := ctx.ShouldBindJSON(&json); err != nil {
 		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	user := &entity.User{
+	user := &Model{
 		Username: json.Username,
 		Password: json.Password,
 		Email:    json.Email,
 		Verified: json.Verified,
 	}
 
-	user, err := c.userRepo.Create(user)
+	user, err := c.userRepo.Create(ctx, user)
 	if err != nil {
 		helper.ResponseInternalServerError(ctx, err.Error())
 		return
@@ -53,19 +64,19 @@ func (c *User) Create(ctx *gin.Context) {
 }
 
 // Get retrieves a single user
-func (c *User) Get(ctx *gin.Context) {
-	id, err := uuid.FromString(ctx.Param("id"))
+func (c *Controller) Get(ctx *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
 		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	user := &entity.User{}
+	user := &Model{}
 	user.ID = id
 
-	user, err = c.userRepo.Get(user)
+	user, err = c.userRepo.Get(ctx, user)
 	if err != nil {
-		if err == repository.ErrRecordNotFound {
+		if err == ErrUserNotFound {
 			helper.ResponseNotFound(ctx, "user:notfound")
 			return
 		}
@@ -78,8 +89,8 @@ func (c *User) Get(ctx *gin.Context) {
 }
 
 // List retrieves a list of user
-func (c *User) List(ctx *gin.Context) {
-	users, err := c.userRepo.List()
+func (c *Controller) List(ctx *gin.Context) {
+	users, err := c.userRepo.List(ctx, bson.M{})
 	if err != nil {
 		helper.ResponseInternalServerError(ctx, err.Error())
 		return
@@ -89,26 +100,31 @@ func (c *User) List(ctx *gin.Context) {
 }
 
 // Update updates a user
-func (c *User) Update(ctx *gin.Context) {
-	id, err := uuid.FromString(ctx.Param("id"))
+func (c *Controller) Update(ctx *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
 		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	var json userJSON
+	var json reqJSON
 
 	if err := ctx.ShouldBindJSON(&json); err != nil {
 		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	user := &entity.User{}
-	user.ID = id
+	user := &Model{
+		ID:       id,
+		Username: json.Username,
+		Password: json.Password,
+		Email:    json.Email,
+		Verified: json.Verified,
+	}
 
-	user, err = c.userRepo.Update(user, json)
+	user, err = c.userRepo.Update(ctx, user)
 	if err != nil {
-		if err == repository.ErrRecordNotFound {
+		if err == ErrUserNotFound {
 			helper.ResponseNotFound(ctx, "user:notfound")
 			return
 		}
@@ -121,19 +137,19 @@ func (c *User) Update(ctx *gin.Context) {
 }
 
 // Delete deletes a user
-func (c *User) Delete(ctx *gin.Context) {
-	id, err := uuid.FromString(ctx.Param("id"))
+func (c *Controller) Delete(ctx *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
 		helper.ResponseBadRequest(ctx, err.Error())
 		return
 	}
 
-	user := &entity.User{}
+	user := &Model{}
 	user.ID = id
 
-	user, err = c.userRepo.Delete(user)
+	user, err = c.userRepo.Delete(ctx, user)
 	if err != nil {
-		if err == repository.ErrRecordNotFound {
+		if err == ErrUserNotFound {
 			helper.ResponseNotFound(ctx, "user:notfound")
 			return
 		}

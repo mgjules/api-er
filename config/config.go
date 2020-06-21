@@ -20,12 +20,8 @@ type SecurityConfig struct {
 
 // DBConfig holds db-related config
 type DBConfig struct {
-	Dialect  string
-	Name     string
-	Host     string
-	Port     string
-	Username string
-	Password string
+	Name string
+	URI  string
 }
 
 // CORSConfig holds cors-related config
