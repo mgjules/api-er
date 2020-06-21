@@ -9,8 +9,8 @@ API-er is a simple Go boilerplate for building REST API services.
    - Managing configuration
  - [Zap](https://github.com/uber-go/zap)
    - Logger
- - [GORM](https://gorm.io/)
-   - Database ORM
+ - [MongoDB](https://go.mongodb.org/mongo-driver)
+   - Database driver 
  - [Casbin](https://github.com/casbin/casbin)
    - Authorization
  - [Gin](https://github.com/gin-gonic/gin)
