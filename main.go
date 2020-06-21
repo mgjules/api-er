@@ -58,12 +58,8 @@ func main() {
 	}
 
 	// Database
-	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.DB.URI))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(cfg.DB.URI))
 	if err != nil {
-		logger.Fatal("Can't connect to DB", zap.Error(err))
-	}
-
-	if err = client.Connect(context.Background()); err != nil {
 		logger.Fatal("Can't connect to DB", zap.Error(err))
 	}
 
