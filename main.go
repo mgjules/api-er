@@ -23,8 +23,6 @@ import (
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 // AppName is just the app name

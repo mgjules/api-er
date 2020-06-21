@@ -11,9 +11,7 @@ require (
 	github.com/gin-contrib/static v0.0.0-20191128031702-f81c604d8ac2
 	github.com/gin-contrib/zap v0.0.1
 	github.com/gin-gonic/gin v1.6.3
-	github.com/jinzhu/gorm v1.9.13
 	github.com/pelletier/go-toml v1.8.0 // indirect
-	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/viper v1.7.0
 	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 	go.mongodb.org/mongo-driver v1.3.4
