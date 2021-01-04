@@ -2,6 +2,10 @@
 
 API-er is a simple Go boilerplate for building REST API services.
 
+At this stage, API-er is merely a Proof-of-Concept and is considered *unstable*.
+
+You are free to fork it or take inspiration from it!
+
 ## Core libraries
  - [Cobra](https://github.com/spf13/cobra)
    - CLI interface
