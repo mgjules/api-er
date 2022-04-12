@@ -1,11 +1,10 @@
 package user
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/mgjules/api-er/helper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/JulesMike/api-er/helper"
-	"github.com/gin-gonic/gin"
 )
 
 // TODO: add proper validation

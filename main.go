@@ -6,15 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/JulesMike/api-er/app"
-	"github.com/JulesMike/api-er/helper"
-	"github.com/JulesMike/api-er/security"
-	"github.com/JulesMike/api-er/user"
 	"github.com/casbin/casbin"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"github.com/JulesMike/api-er/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/sessions"
@@ -22,6 +14,13 @@ import (
 	"github.com/gin-contrib/static"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"github.com/mgjules/api-er/app"
+	"github.com/mgjules/api-er/config"
+	"github.com/mgjules/api-er/helper"
+	"github.com/mgjules/api-er/security"
+	"github.com/mgjules/api-er/user"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 

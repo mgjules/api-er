@@ -1,9 +1,9 @@
 package security
 
 import (
-	"github.com/JulesMike/api-er/helper"
-	"github.com/JulesMike/api-er/user"
 	"github.com/gin-gonic/gin"
+	"github.com/mgjules/api-er/helper"
+	"github.com/mgjules/api-er/user"
 	csrf "github.com/utrack/gin-csrf"
 )
 

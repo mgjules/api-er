@@ -1,4 +1,4 @@
-module github.com/JulesMike/api-er
+module github.com/mgjules/api-er
 
 go 1.18
 

@@ -3,8 +3,8 @@ package app
 import (
 	"time"
 
-	"github.com/JulesMike/api-er/helper"
 	"github.com/gin-gonic/gin"
+	"github.com/mgjules/api-er/helper"
 )
 
 // Controller represents the app controller

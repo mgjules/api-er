@@ -3,10 +3,9 @@ package user
 import (
 	"log"
 
-	"github.com/JulesMike/api-er/helper"
-
 	"github.com/casbin/casbin"
 	"github.com/gin-gonic/gin"
+	"github.com/mgjules/api-er/helper"
 )
 
 // Auth is the auth middleware
