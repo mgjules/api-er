@@ -1,5 +1,8 @@
 # API-er
 
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=for-the-badge)](https://godoc.org/github.com/mgjules/api-er)
+[![License](https://img.shields.io/badge/Apache%202.0-green.svg?style=for-the-badge)](LICENSE)
+
 API-er is a simple Go boilerplate for building REST API services.
 
 At this stage, API-er is merely a Proof-of-Concept and is considered *unstable*.
